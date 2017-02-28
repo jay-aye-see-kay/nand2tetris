@@ -1,0 +1,14 @@
+/** Dungeon war - Marlon's first game' */
+/*  */
+
+class Main {
+    function void main() {
+        var Dungeon game;
+    
+        let game = Dungeon.new();
+        do won = game.run();
+        do game.dispose();
+        
+        return;
+    }
+}

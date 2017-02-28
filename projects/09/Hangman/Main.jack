@@ -1,0 +1,19 @@
+/** Hangman loosely implemented OO style */
+/*  */
+
+class Main {
+    function void main() {
+        var HGame game;
+        var int wCount, lCount;
+        var boolean won;
+        let wCount = 0; let lCount = 0;
+
+        while (true) {
+            let game = HGame.new(wCount, lCount);
+            let won = game.run();
+            do game.dispose();
+            if (won) { let wCount = wCount + 1; } else { let lCount = lCount + 1; }
+        }
+        return;
+    }
+}

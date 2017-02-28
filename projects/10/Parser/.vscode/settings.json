@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "*.jack": "java"
+    },
+    "zenMode.hideTabs": false,
+    "update.channel": "none",
+    "files.autoSave": "afterDelay",
+    "python.linting.pylintEnabled": false
+}

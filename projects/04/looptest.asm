@@ -1,0 +1,23 @@
+// Looptest
+
+// Compute: if R0>0 R1 = 1 otherwise R1 = 0
+
+@R0
+D=M  // D = RAM[0]
+
+@gtz
+D;JGT // If R0>0 got 'gtz'
+
+@R1
+M=0 // RAM[1] = 0
+
+@end
+0;JMP // got end of program
+
+(gtz)
+@R1
+M=1 // R1 = 1
+
+(end)
+@end
+0;JMP

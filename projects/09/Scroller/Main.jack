@@ -1,0 +1,13 @@
+/** This game is a first attempt a OO jack programming, loosely based on the square game */
+/*  */
+
+class Main {
+    function void main() {
+        var Enviro environment;
+        let environment = Enviro.new();
+        do environment.run();
+        do environment.gameOver();
+        //do environment.dispose();
+        return;
+    }
+}

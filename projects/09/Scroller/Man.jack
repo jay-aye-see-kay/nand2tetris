@@ -1,0 +1,47 @@
+/** This class creates a Man object for use in the game */
+/*  */
+
+class Man {
+    /* field and static declarations */
+    field int xPos, yPos;
+    static int xSize, ySize;
+    static int xScreen, yScreen;
+
+    /* constructor to set inputs to class variables */
+    constructor Man new(int xStart, int yStart) {
+        let xPos = xStart;          // x, y position of top left of man
+        let yPos = yStart;
+        let xSize = 11;             // x, y dimensions of man
+        let ySize = 25;
+        let xScreen = 512;          // x, y dimensions of screen
+        let yScreen = 256;
+        do draw(true);
+        return this;}
+
+    /** dispose method to clear memory */
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;}
+
+    /** draw the dude */
+    method void draw(boolean color) {
+        do Screen.setColor(color);
+        do Screen.drawCircle(xPos + 6, yPos + 6, 5);                    // head
+        do Screen.drawLine(xPos, yPos + 14, xPos + 11, yPos + 14);      // arm
+        do Screen.drawLine(xPos + 6, yPos + 7, xPos + 6, yPos + 17);    // body
+        do Screen.drawLine(xPos + 6, yPos + 17, xPos + 1, yPos + ySize);    // left leg
+        do Screen.drawLine(xPos + 6, yPos + 17, xPos + xSize - 1, yPos + ySize);    // right leg
+        //do Screen.drawRectangle(xPos, yPos, xPos + xSize, yPos + ySize);
+        return;}
+
+    /** move in x and y directions as specified */
+    method void move(int xStep, int yStep) {
+        // clear the dude
+        do draw(false);
+        // update position
+        if ((xPos + xStep) < (xScreen - xSize) & (xPos + xStep) > 0 ) {let xPos = xPos + xStep;}
+        if ((yPos + yStep) < (yScreen - ySize) & (yPos + yStep) > 0 ) {let yPos = yPos + yStep;}
+        // draw the dude
+        do draw(true);
+        return;}
+}

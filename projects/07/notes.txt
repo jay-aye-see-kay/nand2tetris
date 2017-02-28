@@ -1,0 +1,97 @@
+Memory access comands:
+	push segment index - push the value of segment[index] onto the stack
+	pop segment index - pop off the top value and store it in segment[index]
+
+Example add.vm
+	push constant x
+			@x
+			D=A
+			@SP
+			A=M
+			M=D
+			@SP
+			A=M
+			D=A+1
+			@SP
+			M=D
+	push constant y
+			@y
+			D=A
+			@SP
+			A=M
+			M=D
+			@SP
+			A=M
+			D=A+1
+			@SP
+			M=D
+	add
+			@SP
+			A=M
+			A=A-1
+			D=M
+			A=A-1
+			M=M+D
+			D=A			
+			@SP
+			M=D
+
+			
+			
+			-------->	
+	put 4 in M[SP]
+	SP++				//push constant 4
+	
+	put 5 in M[SP]
+	SP++				//push constant 5
+	
+	M[SP-2] = M[SP-2] + M[SP-1]  //add
+-------->	
+	// Initialize M[SP] = 256
+	@256	//A=256,D=0,M=0
+	D=A		//A=256,D=256,M=0
+	@SP		//A=SP,D=256,M=0
+	M=D		//A=SP,D=256,M=256
+	
+	// Store 4 in M[M[SP]]
+	@4		//A=4,D=?,M=?
+	D=A		//A=4,D=4,M=?
+	@SP		//A=SP,D=4,M=256
+	A=M		//A=256,D=4,M=0
+	M=D		//A=256,D=4,M=4
+	
+	// Increment M[SP]
+	@SP		//A=SP,D=?,M=256
+	A=M		//A=256,D=?,M=4
+	D=A+1	//A=256,D=257,M=4
+	@SP		//A=SP,D=257,M=256
+	M=D		//A=SP,D=257,M=257
+	
+	// Store 5 in M[M[SP]]
+	@5		//A=4,D=?,M=?
+	D=A		//A=4,D=5,M=?
+	@SP		//A=SP,D=5,M=256
+	A=M		//A=256,D=5,M=0
+	M=D		//A=256,D=5,M=5
+	
+	// Increment M[SP]
+	@SP		
+	A=M		
+	D=A+1	
+	@SP		
+	M=D		
+	
+	// Add
+	@SP			//A=SP
+	A=M			//A=M[SP]
+	A=A-1		//A--
+	D=M			//D=M[A]
+	A=A-1		//A--
+	M=M+D		//M[A]=M[A]+D
+	D=A			
+	@SP
+	M=D
+	
+	
+	
+	

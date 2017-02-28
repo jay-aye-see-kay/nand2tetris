@@ -1,0 +1,16 @@
+/** This is a simple procedural (not OO) jack program that acts like an editor like notepad */
+/* It is intended to be my first program to play with input and output without math or graphics */
+/* Written by Jack Rose 2017-02-04 */
+
+class Main {
+    function void main() {
+
+        do TextFile.makeHeader();
+        do TextFile.myEditor();
+        //do TextFile.inOut();
+        //do TextFile.quickFill();
+        //do TextFile.playWithCursor();
+        
+        return;
+    }
+}

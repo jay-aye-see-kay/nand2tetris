@@ -1,0 +1,266 @@
+/** An area for testing out basic functions of the text editor individually */
+/*  */
+
+class TextFile {
+    static boolean capsLock;
+    static int CX, CY; // cursor x and y positions
+
+    /* quick method to test this class *
+    function void quickTest() {
+        do Output.printString("Okay so far");
+        return;}
+
+    /* displays the ASCII code of currently pressed key only *
+    function void inOut() {
+        var char key; // key currently pressed
+        while (true) {
+            while (key=0) {let key = Keyboard.keyPressed();} // wait for keyboard input
+            do Output.printString("Current value of keyboard register: ");
+            do Output.printInt(key);
+            do Output.println();
+            do Output.printString("Corrisponding ASCII value: ");
+            do Output.printChar(key);
+            while (~(key=0)) {let key = Keyboard.keyPressed();} // wait for key release
+            do Screen.clearScreen();
+            do Output.moveCursor(0,0);
+        }
+        return;}    
+    
+    /* get basic text operations functioning and recognise arrows *
+    function void basicText() {
+        var char key; // key currently pressed
+        var boolean exit;
+        let exit = false;
+
+        while (~exit) {
+            // wait for keypress
+            while (key=0) {
+                let key = Keyboard.keyPressed();
+            }
+            // take action
+            if ( (key>129) & (key<134) ) {                // move cursor. left, up, right, down == 130, 131, 132, 133
+                if (key=130) {do Output.printString("L");}
+                if (key=131) {do Output.printString("U");}
+                if (key=132) {do Output.printString("R");}
+                if (key=133) {do Output.printString("D");}
+            } else {                       // anything alphanumeric
+                do Output.printChar(key);
+            }  
+            
+            // wait for key release
+            while (~(key=0)) {
+                let key = Keyboard.keyPressed();
+            }
+        }
+        return;}
+
+    /* write some black squares and text for cursor testing *
+    function void quickFill() {
+        var int i;
+        let i = 0;
+        while (i < 128) {
+            do Output.printInt(i);
+            do Output.printString(": ");
+            do Output.printChar(i);
+            do Output.printString(",   ");
+            let i = i + 1;
+        }
+        return;}
+
+    /* get a cursor moving aroung the screen *
+    function void playWithCursor() {
+        var char key; // key currently pressed
+        var int CX, CY; // cursor x and y positions
+        var boolean exit;
+        let exit = false;
+        let CX = 0;
+        let CY = 0;
+
+        while (~exit) {
+            
+            // wait for keypress
+            while (key=0) {
+                let key = Keyboard.keyPressed();
+                // flash black
+                do Screen.setColor(true); do Screen.drawRectangle((CX*8)+6,CY*11,(CX*8)+7,(CY*11)+9); do Sys.wait(20);
+                // flash white
+                do Screen.setColor(false); do Screen.drawRectangle((CX*8)+6,CY*11,(CX*8)+7,(CY*11)+9); do Sys.wait(20);
+            }
+
+            // take action
+            if ( (key>129) & (key<134) ) {                
+                // Left key press
+                if (key = 130) { 
+                    if (CX > 0) { // not SOL
+                        let CX = CX - 1;
+                    } else { // SOL: If not at top of page, wrap around
+                        if (CY > 0) {let CX = 63; let CY = CY - 1;}
+                    }
+                } 
+                // Up key press
+                if ( (key=131) & (CY>0) ) {let CY = CY - 1;}
+                //Right key press
+                if (key = 132) {  
+                    if (CX < 63) { // not EOL
+                        let CX = CX + 1;
+                    } else { // EOL: If not at bottom of page, wrap around
+                        if (CY < 22) {let CX = 0; let CY = CY + 1;}
+                    }
+                }
+                // Down key press
+                if ( (key=133) & (CY<22) ) {let CY = CY + 1;} 
+            }
+
+            if (key=81) {let exit = true;} // escape
+            
+            // wait for key release
+            while (~(key=0)) {let key = Keyboard.keyPressed();}
+        }
+        return;} 
+
+    /* input speed test, take input from keyboard, print on enter, see if it picks up all the letters 
+    RESULT -- doesn't really effect it, seems to do with the input paramenters *
+    function void speedTest() {
+        var char key; // key currently pressed
+        var String input; // sum of all that has been entered
+        var boolean exit;
+
+        let exit = false; 
+        let input = String.new(100);
+
+        while (~(exit)) {
+            while (key=0) {let key = Keyboard.keyPressed();} // wait for keyboard input
+            
+            if (key = 128) {
+                let exit = true; 
+            } else {
+                do input.appendChar(key);
+            }
+            
+            while (~(key=0)) {let key = Keyboard.keyPressed();} // wait for key release
+        }
+
+        do Output.printString(input);
+
+        return;}
+
+    /* decorative header */ 
+    function void makeHeader() {
+        // put 'my file.txt up the top'
+        do Output.moveCursor(0,10);
+        do Output.printString("'Untitled.jpeg' - Some Terrible Editor");
+        
+        // put in fake file edit etc menus
+        do Output.moveCursor(1,1);
+        do Output.printString("File  Edit  These  Are  Not  Real  Menus");
+
+        // draw some boxes around it all
+        do Screen.setColor(true);
+        do Screen.drawLine(0, 11, 511, 11);
+        do Screen.drawLine(0, 21, 511, 21);
+
+        do TextFile.makeExs(501,0);
+        do TextFile.makeSquare(490,0);
+        do TextFile.makeDash(479,0);
+
+        return;}
+
+    /* dercorative x in the corner */
+    function void makeExs(int x0, int y0) {
+        do Screen.setColor(true);
+        do Screen.drawLine(x0 + 1, y0 + 1, x0 + 7, y0 + 7);
+        do Screen.drawLine(x0 + 7, y0 + 1, x0 + 1, y0 + 7);
+        return;}
+    
+    /* dercorative square in the corner */
+    function void makeSquare(int x0, int y0) {
+        do Screen.setColor(true);
+        do Screen.drawLine(x0 + 1, y0 + 1, x0 + 7, y0 + 1);
+        do Screen.drawLine(x0 + 7, y0 + 1, x0 + 7, y0 + 7);
+        do Screen.drawLine(x0 + 7, y0 + 7, x0 + 1, y0 + 7);
+        do Screen.drawLine(x0 + 1, y0 + 7, x0 + 1, y0 + 1);
+        return;}
+
+    /* dercorative dash in the corner */
+    function void makeDash(int x0, int y0) {
+        do Screen.setColor(true);
+        do Screen.drawLine(x0 + 1, y0 + 4, x0 + 7, y0 + 4);
+        return;}
+
+    /* Draw a caps lock indicator on the top right of the screen */
+    function void updateCapsLock(boolean state) {
+        // move cursor to top right and write caps lock state
+        let capsLock = state;
+        do Output.moveCursor(1,55);
+        if (state) {
+            do Output.printString("CAPS ON ");
+        } else {
+            do Output.printString("caps off");
+        }
+        // re-draw header to fix that header line
+        do TextFile.makeHeader();
+        // move the cursor back to where it's supposed to be
+        do Output.moveCursor(CY, CX);
+        return;}
+
+    /* basic editor with flashing cursor, arrow keys have no effect */
+    function void myEditor() {
+        var char key; // key currently pressed
+        let CX = 0; let CY = 2;
+        do TextFile.updateCapsLock(true);
+        do Output.moveCursor(2, 0);
+
+        while (true) {
+            // wait for keypress
+            while (key=0) {
+                let key = Keyboard.keyPressed();
+                // flash black flash white
+                do Screen.setColor(true); do Screen.drawRectangle((CX*8),(CY*11),(CX*8)+1,(CY*11)+9); do Sys.wait(20);
+                do Screen.setColor(false); do Screen.drawRectangle((CX*8),(CY*11),(CX*8)+1,(CY*11)+9); do Sys.wait(20);
+            }
+
+            // if key is UP set capsLock to true
+                if (key=131) {do TextFile.updateCapsLock(true);}
+            // if key is DOWN set capsLock to false
+                if (key=133) {do TextFile.updateCapsLock(false);}
+
+            // output charcter and and move cursor
+            if ( (key > 31) & (key < 127) ) {
+                // change to lowercase if caps lock is off
+                if (~(capsLock) & (key > 64) & (key < 91)) {
+                    let key = key + 32;
+                }
+                
+                do Output.printChar(key);
+                // move cursor with character (roll new line if needed)
+                if (CX < 63) { // not EOL
+                    let CX = CX + 1;
+                } else { // EOL: If not at bottom of page, wrap around
+                    if (CY < 22) {let CX = 0; let CY = CY + 1;}
+                }
+            }
+            
+            // if key was enter (128) and we're not at the bottom: drop cursor new line 
+            if ((key = 128) & (CY < 22)) { 
+                do Output.printChar(key);
+                let CX = 0; let CY = CY + 1;  
+            }
+
+            // if key was backspace (129) and we aren't at 2,0: backspace and move cursor
+            if ((key = 129) & ((CX + CY) > 2)) { 
+                do Output.backSpace();
+                // move cursor with character (up new line if needed)
+                if (CX > 0) { // not SOL
+                    let CX = CX - 1;
+                } else { // SOL: wrap around to line above
+                    let CX = 63; let CY = CY - 1;
+                }
+            }
+            
+            // wait for key release
+            while (~(key=0)) {let key = Keyboard.keyPressed();} 
+        }
+        return;  
+    }
+
+}

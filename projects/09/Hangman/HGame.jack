@@ -1,0 +1,215 @@
+/** This class creates a hangman game */
+/*  */
+
+class HGame {
+    /* field and static declarations */
+    field String answer, visible, guesses;
+    field char currentLetter;
+    field int trys, errors, key, wonCount, lostCount;
+    field boolean gameOver, won, letterInWord;
+
+    /* constructor to set inputs to class variables */
+    constructor HGame new(int wCount, int lCount) {
+        let guesses = String.new(26);
+        let wonCount = wCount;
+        let lostCount = lCount;
+        return this;}
+
+    /** dispose method to clear memory */
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;}
+
+    /** main game loop */
+    method bool run() {
+        let answer = getWord();
+        let trys = 0; let errors = 0; let won = false;
+        do Screen.clearScreen();
+        do createVisible();
+
+        let gameOver = false; 
+        while (~gameOver) {
+            do screenDraw(); do printScore();
+            let currentLetter = getLetter();
+            let letterInWord = HGame.contains(currentLetter, answer);
+            if (letterInWord) {
+                do updateVisible();
+            } else {
+                let errors = errors + 1;
+                do updateMan();
+            }
+            let trys = trys + 1;
+            do screenDraw();
+            do checkAnswer();
+            if (errors > 9){ let gameOver = true; } 
+        }
+        // print a you won/lose statement
+        do Output.moveCursor(21, 1);
+        if (won) { 
+            do Output.printString("You won. Press any key to start again."); 
+        } else { 
+            do Output.printString("You lost. Press any key to start again.");
+            let visible = answer;
+            do screenDraw(); 
+        }
+        // wait for key press and release restarting game
+        let key = 0; 
+        while (key = 0) { let key = Keyboard.keyPressed(); }
+        while (~(key = 0)) { let key = Keyboard.keyPressed(); }
+        return won;}
+
+    /** get word 'at random' */
+    method String getWord() {
+        var Array words;
+        var int rand;
+        let rand = 0;
+        let words = Array.new(10);
+        
+        let words[0] = "ORCHARD"; let words[1] = "SKATEPARK"; 
+        let words[2] = "SCHOOL"; let words[3] = "SMELL"; 
+        let words[4] = "LOUNGE"; let words[5] = "PRISION"; 
+        let words[6] = "KITCHEN"; let words[7] = "COURTHOUSE"; 
+        let words[8] = "BATHROOM"; let words[9] = "UNIVERSITY"; 
+
+        do Screen.clearScreen();
+        do Output.moveCursor(2, 1);
+        do Output.printString("Press a key a random");
+
+        // wait for key press, increment rand while waiting for source of randomness
+        let key = 0; 
+        while (key = 0) { 
+            let key = Keyboard.keyPressed();
+            if (rand < 256) { let rand  = rand + 1; } else { let rand = 0; }
+        }
+        // normalize rand to length of the words array
+        let rand = rand / 26;
+        // wait for key release
+        while (~(key = 0)) { let key = Keyboard.keyPressed(); }
+
+        return words[rand];}
+
+    /** create the visible string, same length as answer, but all dashes */
+    method void createVisible() {
+        var int len, i;
+        let len = answer.length();
+        let visible = String.new(len);
+        let i = 0; while (i < len) {
+            do visible.appendChar(45);
+            let i = i + 1;
+        }
+        return;}
+    
+    /** draw the gameplay screen */
+    method void screenDraw() {
+        //do Screen.clearScreen();
+        do Output.moveCursor(1 + trys, 1);
+        do Output.printString(visible);
+        return;}
+
+    /** get the next letter for input */
+    method char getLetter() {
+        var char letter; let letter = 0;
+        while (letter = 0) {
+            do Output.moveCursor(1 + trys, 15); do Output.printChar(32);
+            do Output.moveCursor(1 + trys, 15); 
+            let letter = Keyboard.readChar();
+            if (HGame.contains(letter, guesses)) { let letter = 0; }
+        }
+        let guesses = guesses.appendChar(letter);
+        return letter;}
+
+    /** check if a char is in a string */
+    function boolean contains(char letter, String word) {
+        var int len, i; 
+        var char ansChar;
+        let len = word.length();
+        
+        let i = 0; while (i < len) {
+            let ansChar = word.charAt(i);
+            if (ansChar = letter) { return true; }
+            let i = i + 1;
+        }
+        return false;}
+
+    /** check the score and change the booleans won and gameOver appropriately */
+    method void checkAnswer() {
+        var int len, i; 
+        var char ansChar, visChar;
+        let len = answer.length();
+        
+        let i = 0; while (i < len) {
+            let ansChar = answer.charAt(i);
+            let visChar = visible.charAt(i);
+            if (~(ansChar = visChar)) { 
+                return; 
+                }
+            let i = i + 1;
+        }
+        let won = true; let gameOver = true;
+        return;}
+
+    /** updates the visible string by revealing any characters that match the currentLetter */
+    method void updateVisible() {
+        var int len, i;
+        var boolean conts; 
+        var char ansChar;
+        let conts = false;
+        let len = answer.length();
+        
+        let i = 0; while (i < len) {
+            let ansChar = answer.charAt(i);
+            if (ansChar = currentLetter) { 
+                do visible.setCharAt(i, ansChar); 
+                }
+            let i = i + 1;
+        }
+        return;}
+
+    /** */
+    method void printScore() {
+        do Output.moveCursor(19, 51);
+        do Output.printString("Mistakes: ");
+        do Output.printInt(errors);
+        do Output.moveCursor(20, 49);
+        do Output.printString("Games Won:  ");
+        do Output.printInt(wonCount);
+        do Output.moveCursor(21, 49);
+        do Output.printString("Games Lost: ");
+        do Output.printInt(lostCount);
+        return;}
+    
+    /** draws a new piece of the hangman man based on error count */
+    method void updateMan() {
+        var int xOrigin, yOrigin, yHeadCenter, headRadius, torsoLength, headToArm, armLength;
+        let xOrigin = 200; let yOrigin = 40;
+        let yHeadCenter = 23; let headRadius = 13; let torsoLength = 32; let headToArm = 13; let armLength = 17;
+
+        do Screen.setColor(true);
+        // the base
+        if (errors = 1) { 
+            do Screen.drawRectangle(xOrigin + 13, yOrigin + 100, xOrigin + 130, yOrigin + 120);
+            do Screen.setColor(false); do Screen.drawRectangle(xOrigin + 14, yOrigin + 101, xOrigin + 129, yOrigin + 119); }
+        // post 1
+        if (errors = 2) { do Screen.drawLine(xOrigin + 30, yOrigin + 100, xOrigin + 30, yOrigin + 0); } 
+        // post 2
+        if (errors = 3) { do Screen.drawRectangle(xOrigin + 30, yOrigin + 0, xOrigin + 100, yOrigin + 0); } 
+        // rope
+        if (errors = 4) { do Screen.drawLine(xOrigin + 100, yOrigin + 0, xOrigin + 100, yOrigin + yHeadCenter - headRadius); } 
+        // head
+        if (errors = 5) { 
+            do Screen.drawCircle(xOrigin + 100, yOrigin + yHeadCenter, headRadius);
+            do Screen.setColor(false); do Screen.drawCircle(xOrigin + 100, yOrigin + yHeadCenter, headRadius - 1); }
+        //torso
+        if (errors = 6) { do Screen.drawLine(xOrigin + 100, yOrigin + yHeadCenter + headRadius, xOrigin + 100, yOrigin + yHeadCenter + headRadius + torsoLength); }
+        // left arm
+        if (errors = 7) { do Screen.drawLine(xOrigin + 100, yOrigin + yHeadCenter + headRadius + headToArm, xOrigin + 100 - armLength, yOrigin + yHeadCenter + headRadius + headToArm); }
+        // right arm
+        if (errors = 8) { do Screen.drawLine(xOrigin + 100, yOrigin + yHeadCenter + headRadius + headToArm, xOrigin + 100 + armLength, yOrigin + yHeadCenter + headRadius + headToArm); }
+        // left leg
+        if (errors = 9) { do Screen.drawLine(xOrigin + 100, yOrigin + yHeadCenter + headRadius + torsoLength, xOrigin + 100 - armLength, yOrigin + 95); }
+        // right leg
+        if (errors = 10) { do Screen.drawLine(xOrigin + 100, yOrigin + yHeadCenter + headRadius + torsoLength, xOrigin + 100 + armLength, yOrigin + 95); }
+
+        return;}
+
+}
